@@ -2,6 +2,7 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dtos.Booking.BookingDTO;
 import facades.AssistantFacade;
 import facades.BookingFacade;
 import utils.EMF_Creator;
@@ -31,5 +32,14 @@ public class BookingResource {
     @RolesAllowed("user")
     public String getBookingsByUser(@PathParam("username") String username) {
         return gson.toJson(facade.getAllBookings(username));
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String createBooking(String booking) {
+        BookingDTO b = gson.fromJson(booking, BookingDTO.class);
+        BookingDTO bNew = facade.createBooking(b);
+        return gson.toJson(bNew);
     }
 }

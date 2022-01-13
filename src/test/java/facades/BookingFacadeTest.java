@@ -1,10 +1,7 @@
 package facades;
 
 import dtos.Booking.BookingDTO;
-import entities.Booking;
-import entities.Car;
-import entities.Role;
-import entities.User;
+import entities.*;
 import org.junit.jupiter.api.*;
 import utils.EMF_Creator;
 
@@ -28,6 +25,7 @@ class BookingFacadeTest {
     private static Booking b1, b2, b3;
     private static User u1;
     private static Car c1, c2, c3;
+    private static Assistant a1, a2, a3;
 
     public BookingFacadeTest() {
     }
@@ -62,6 +60,10 @@ class BookingFacadeTest {
         c2 = new Car("YYXX444", "TestModelTwo", "TestMakeTwo", 2021);
         c3 = new Car("XYYX555", "TestModelThree", "TestMakeThree", 2022);
 
+        a1 = new Assistant("TestNameOne", "Danish", 5, 125);
+        a2 = new Assistant("TestNameTwo", "Swedish", 2, 115);
+        a3 = new Assistant("TestNameThree", "Polish", 27, 75);
+
         Role userRole = new Role("user");
         u1 = new User("user", "test");
         u1.addRole(userRole);
@@ -73,6 +75,7 @@ class BookingFacadeTest {
         c1.addBooking(b1);
         c2.addBooking(b2);
         c3.addBooking(b3);
+
 
 
         try {
@@ -90,6 +93,9 @@ class BookingFacadeTest {
             em.persist(b1);
             em.persist(b2);
             em.persist(b3);
+            em.persist(a1);
+            em.persist(a2);
+            em.persist(a3);
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -114,6 +120,32 @@ class BookingFacadeTest {
         BookingDTO b3DTO = new BookingDTO(b3);
 
         assertThat(bookings, containsInAnyOrder(b1DTO,b2DTO, b3DTO));
+
+    }
+
+    @Test
+    public void createBookingTest() {
+        Booking b4 = new Booking(1000);
+        Car c4 = new Car("TRXD654","T-Roc","Volkswagen", 2018);
+        b4.setCar(c4);
+        b4.addAssistant(a1);
+        b4.addAssistant(a2);
+        u1.addBooking(b4);
+        BookingDTO createdBooking = new BookingDTO(b4);
+
+        BookingDTO b4DTO = facade.createBooking(createdBooking);
+
+        List<BookingDTO> bookings = facade.getAllBookings(u1.getUserName()).getBookings();
+
+        //Test if the size of the boat array is now 4 instead of 3.
+        int expected = 4;
+        int actual = bookings.size();
+        assertEquals(expected, actual);
+
+
+        //Confirm that b4DTO (the new booking) has been added to the list of bookings.
+        assertThat(bookings, hasItem(b4DTO));
+
 
     }
 }

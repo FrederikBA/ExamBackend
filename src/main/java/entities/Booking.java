@@ -71,13 +71,6 @@ public class Booking {
         this.assistants = assistants;
     }
 
-    public void addAssistant(Assistant assistant) {
-        if (assistant != null) {
-            this.assistants.add(assistant);
-            assistant.getBookings().add(this);
-        }
-    }
-
     public User getUser() {
         return user;
     }
@@ -85,4 +78,12 @@ public class Booking {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public void addAssistant(Assistant assistant) {
+        if (assistant != null) {
+            this.assistants.add(assistant);
+            assistant.getBookings().add(this);
+        }
+    }
+
 }

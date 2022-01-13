@@ -11,10 +11,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import dtos.Assistant.AssistantDTO;
 import dtos.Booking.BookingDTO;
-import entities.Booking;
-import entities.Car;
-import entities.Role;
-import entities.User;
+import entities.*;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
@@ -40,8 +37,10 @@ class BookingResourceTest {
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
     private static Booking b1, b2, b3;
-    private static User u1;
     private static Car c1, c2, c3;
+    private static Assistant a1, a2, a3;
+    private static User u1, u2;
+    private static Role r1, r2;
 
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
@@ -84,13 +83,20 @@ class BookingResourceTest {
         c2 = new Car("YYXX444", "TestModelTwo", "TestMakeTwo", 2021);
         c3 = new Car("XYYX555", "TestModelThree", "TestMakeThree", 2022);
 
+        a1 = new Assistant("TestNameOne", "Danish", 5, 125);
+        a2 = new Assistant("TestNameTwo", "Swedish", 2, 115);
+        a3 = new Assistant("TestNameThree", "Polish", 27, 75);
+
         c1.addBooking(b1);
         c2.addBooking(b2);
         c3.addBooking(b3);
 
-        Role userRole = new Role("user");
+        r1 = new Role("user");
+        r2 = new Role("admin");
         u1 = new User("user", "test");
-        u1.addRole(userRole);
+        u1.addRole(r1);
+        u2 = new User("admin", "test");
+        u2.addRole(r2);
 
         u1.addBooking(b1);
         u1.addBooking(b2);
@@ -104,14 +110,18 @@ class BookingResourceTest {
             em.createQuery("delete from Car").executeUpdate();
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
-            em.persist(userRole);
+            em.persist(r1);
+            em.persist(r2);
             em.persist(u1);
-            em.persist(c1);
+            em.persist(u2);
             em.persist(c2);
             em.persist(c3);
             em.persist(b1);
             em.persist(b2);
             em.persist(b3);
+            em.persist(a1);
+            em.persist(a2);
+            em.persist(a3);
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -136,4 +146,26 @@ class BookingResourceTest {
     private void logOut() {
         securityToken = null;
     }
+    /*
+    @Test
+    public void testCreateBooking() {
+        Booking b4 = new Booking(1000);
+        Car c4 = new Car("TRXD654", "T-Roc", "Volkswagen", 2018);
+        b4.setCar(c4);
+        b4.addAssistant(a1);
+        b4.addAssistant(a2);
+        u1.addBooking(b4);
+
+
+        given()
+                .contentType("application/json")
+                .body(new BookingDTO(b4))
+                .when()
+                .post("booking")
+                .then()
+                .statusCode(200)
+                .body("id", notNullValue())
+                .body("duration", equalTo("1000"));
+    }
+     */
 }
