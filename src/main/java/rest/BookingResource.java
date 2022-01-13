@@ -26,12 +26,19 @@ public class BookingResource {
     @Context
     SecurityContext securityContext;
 
+    @Path("/all")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getAll() {
+        return gson.toJson(facade.getAllBookings());
+    }
+
     @Path("/{username}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("user")
     public String getBookingsByUser(@PathParam("username") String username) {
-        return gson.toJson(facade.getAllBookings(username));
+        return gson.toJson(facade.getBookingsByName(username));
     }
 
     @POST
@@ -43,15 +50,27 @@ public class BookingResource {
         return gson.toJson(bNew);
     }
 
+    @Path("assistants/{id}")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("admin")
+    public String editBookingsAssistants(@PathParam("id") int id, String booking) {
+       BookingDTO b = gson.fromJson(booking, BookingDTO.class);
+        b.setId(id);
+        BookingDTO bEdited = facade.updateBookingAssistants(b);
+        return gson.toJson(bEdited);
+    }
+
     @Path("/{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("admin")
-    public String editBookingAssistants(@PathParam("id") int id, String booking) {
-       BookingDTO b = gson.fromJson(booking, BookingDTO.class);
+    public String editBooking(@PathParam("id") int id, String booking) {
+        BookingDTO b = gson.fromJson(booking, BookingDTO.class);
         b.setId(id);
-        BookingDTO bEdited = facade.updateBookingAssistants(b);
+        BookingDTO bEdited = facade.editBooking(b);
         return gson.toJson(bEdited);
     }
 }

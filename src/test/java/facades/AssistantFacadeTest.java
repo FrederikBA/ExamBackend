@@ -75,20 +75,20 @@ class AssistantFacadeTest {
         int actual = assistants.size();
 
         //Test that there is in fact 3 assistants in the list
-        assertEquals(expected,actual);
+        assertEquals(expected, actual);
 
         AssistantDTO a1DTO = new AssistantDTO(a1);
         AssistantDTO a2DTO = new AssistantDTO(a2);
         AssistantDTO a3DTO = new AssistantDTO(a3);
 
         //Test that it is the objects that we expect the list will contain.
-        assertThat(assistants, containsInAnyOrder(a1DTO,a2DTO,a3DTO));
+        assertThat(assistants, containsInAnyOrder(a1DTO, a2DTO, a3DTO));
 
     }
 
     @Test
     public void createAssistantTest() {
-        Assistant a4 = new Assistant("Jønke","Danish",9,175);
+        Assistant a4 = new Assistant("Jønke", "Danish", 9, 175);
         AssistantDTO createdAssistant = new AssistantDTO(a4);
 
         AssistantDTO a4DTO = facade.createAssistant(createdAssistant);
@@ -105,4 +105,17 @@ class AssistantFacadeTest {
         assertThat(assistants, hasItem(a4DTO));
     }
 
+    @Test
+    public void editAssistantTest() {
+        a1.setName("Ole");
+        a1.setLanguage("Swahili");
+
+        AssistantDTO editedAssistant = new AssistantDTO(a1);
+        facade.editAssistant(editedAssistant);
+
+        assertEquals(facade.getById(a1.getId()).getName(), editedAssistant.getName());
+        assertEquals(facade.getById(a1.getId()).getLanguage(), editedAssistant.getLanguage());
+
+
+    }
 }

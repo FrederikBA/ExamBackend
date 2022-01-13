@@ -3,8 +3,9 @@ package rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dtos.Assistant.AssistantDTO;
-import dtos.Booking.BookingDTO;
-import facades.AssistantFacade;
+import dtos.Car.CarDTO;
+import facades.BookingFacade;
+import facades.CarFacade;
 import utils.EMF_Creator;
 
 import javax.annotation.security.RolesAllowed;
@@ -15,10 +16,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-@Path("/assistant")
-public class AssistantResource {
+@Path("/car")
+public class CarResource {
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
-    private static final AssistantFacade facade = AssistantFacade.getInstance(EMF);
+    private static final CarFacade facade = CarFacade.getInstance(EMF);
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     @Context
     private UriInfo context;
@@ -29,19 +30,8 @@ public class AssistantResource {
     @Path("/all")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed("user")
     public String getAll() {
-        return gson.toJson(facade.getAllAssistants());
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed("admin")
-    public String createAssistant(String assistant) {
-        AssistantDTO a = gson.fromJson(assistant, AssistantDTO.class);
-        AssistantDTO aNew = facade.createAssistant(a);
-        return gson.toJson(aNew);
+        return gson.toJson(facade.getAllCars());
     }
 
     @Path("/{id}")
@@ -49,10 +39,10 @@ public class AssistantResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("admin")
-    public String editAssistants(@PathParam("id") int id, String assistant) {
-        AssistantDTO a = gson.fromJson(assistant, AssistantDTO.class);
-        a.setId(id);
-        AssistantDTO aEdited = facade.editAssistant(a);
-        return gson.toJson(aEdited);
+    public String editCar(@PathParam("id") int id, String car) {
+        CarDTO c = gson.fromJson(car, CarDTO.class);
+        c.setId(id);
+        CarDTO cEdited = facade.editCar(c);
+        return gson.toJson(cEdited);
     }
 }

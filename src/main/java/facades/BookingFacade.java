@@ -10,6 +10,7 @@ import entities.User;
 
 import javax.persistence.*;
 import javax.ws.rs.WebApplicationException;
+import java.util.Date;
 import java.util.List;
 
 public class BookingFacade {
@@ -27,7 +28,19 @@ public class BookingFacade {
         return instance;
     }
 
-    public BookingsDTO getAllBookings(String username) {
+    public BookingsDTO getAllBookings() {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<Booking> query = em.createQuery("SELECT b FROM Booking b", Booking.class);
+            List<Booking> result = query.getResultList();
+            return new BookingsDTO(result);
+        } finally {
+            em.close();
+        }
+    }
+
+    public BookingsDTO getBookingsByName(String username) {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -89,7 +102,7 @@ public class BookingFacade {
 
             // Edit assistants
 
-            //Clear owners from the boat before to allow new owners to be set
+            //Clear assistants from the booking before to allow new owners to be set
             em.getTransaction().begin();
             booking.getAssistants().clear();
             em.createNativeQuery("DELETE FROM ASSISTANT_BOOKING WHERE bookings_id = ?").setParameter(1, booking.getId()).executeUpdate();
@@ -106,9 +119,32 @@ public class BookingFacade {
                 }
             }
 
-            //Update the boat
+            //Update the booking
             em.getTransaction().begin();
             em.merge(booking);
+            em.getTransaction().commit();
+            return new BookingDTO(booking);
+        } finally {
+            em.close();
+        }
+    }
+
+    public BookingDTO editBooking(BookingDTO bookingDTO) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Booking booking = em.find(Booking.class, bookingDTO.getId());
+            if (booking == null) {
+                throw new WebApplicationException("No booking found matching the id");
+            } else {
+                //Update the created to reflect the time of booking update.
+                booking.setCreated(new Date());
+                if (bookingDTO.getDuration() < 10) {
+                    throw new WebApplicationException("The minimum duration of a car wash is 10 minutes");
+                } else {
+                    booking.setDuration(bookingDTO.getDuration());
+                }
+            }
             em.getTransaction().commit();
             return new BookingDTO(booking);
         } finally {

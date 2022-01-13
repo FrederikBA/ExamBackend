@@ -155,7 +155,7 @@ class AssistantResourceTest {
 
     @Test
     public void testCreateAssistant() {
-        login("admin","test");
+        login("admin", "test");
 
         Assistant a4 = new Assistant("Jønke", "Danish", 9, 175);
         given()
@@ -170,5 +170,29 @@ class AssistantResourceTest {
                 .body("name", equalTo(a4.getName()))
                 .body("language", equalTo(a4.getLanguage()))
                 .body("experience", equalTo(a4.getExperience()));
+    }
+
+    @Test
+    public void testEditAssistant() {
+        login("admin", "test");
+        AssistantDTO assistant = new AssistantDTO(a1);
+        assistant.setName("Ole");
+        assistant.setLanguage("Swahili");
+        assistant.setExperience(10);
+        assistant.setPricePrHour(1000);
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("x-access-token", securityToken)
+                .body(assistant)
+                .when()
+                .put("assistant/" + a1.getId())
+                .then()
+                .statusCode(200)
+                .body("name", equalTo("Ole"))
+                .body("language", equalTo("Swahili"))
+                .body("experience", equalTo(10));
+                //@TODO: Double values in rest assured acting weirdly. Maybe typecasting is neccesary
+                //.body("pricePrHour", equalTo(1000.0));
     }
 }

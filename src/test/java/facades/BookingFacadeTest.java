@@ -113,7 +113,7 @@ class BookingFacadeTest {
 
     @Test
     public void getBookingsByUserTest() {
-        List<BookingDTO> bookings = facade.getAllBookings(u1.getUserName()).getBookings();
+        List<BookingDTO> bookings = facade.getBookingsByName(u1.getUserName()).getBookings();
 
         int expected = 3;
         int actual = bookings.size();
@@ -140,7 +140,7 @@ class BookingFacadeTest {
 
         BookingDTO b4DTO = facade.createBooking(createdBooking);
 
-        List<BookingDTO> bookings = facade.getAllBookings(u1.getUserName()).getBookings();
+        List<BookingDTO> bookings = facade.getBookingsByName(u1.getUserName()).getBookings();
 
         //Test if the size of the booking arraylist is now 4 instead of 3.
         int expected = 4;

@@ -25,6 +25,16 @@ public class AssistantFacade {
         return instance;
     }
 
+    public AssistantDTO getById(int id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Assistant assistant = em.find(Assistant.class, id);
+            return new AssistantDTO(assistant);
+        } finally {
+            em.close();
+        }
+    }
+
     public AssistantsDTO getAllAssistants() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -50,6 +60,35 @@ public class AssistantFacade {
 
                 return new AssistantDTO(assistant);
             }
+        } finally {
+            em.close();
+        }
+    }
+
+    public AssistantDTO editAssistant(AssistantDTO assistantDTO) {
+        EntityManager em = emf.createEntityManager();
+
+        if (assistantDTO.getName().length() == 0 || assistantDTO.getLanguage().length() == 0) {
+            throw new WebApplicationException("Inputs are missing, please make sure to fill out the formular");
+        }
+
+        try {
+            em.getTransaction().begin();
+            Assistant assistant = em.find(Assistant.class, assistantDTO.getId());
+            if (assistant == null) {
+                throw new WebApplicationException("No assistant found matching the id");
+            } else {
+                assistant.setName(assistantDTO.getName());
+                assistant.setLanguage(assistantDTO.getLanguage());
+                assistant.setExperience(assistantDTO.getExperience());
+                if (assistantDTO.getPricePrHour() <= 49) {
+                    throw new WebApplicationException("The amount is below the minimum wage of 50,- DKK");
+                } else {
+                    assistant.setPricePrHour(assistantDTO.getPricePrHour());
+                }
+            }
+            em.getTransaction().commit();
+            return new AssistantDTO(assistant);
         } finally {
             em.close();
         }
