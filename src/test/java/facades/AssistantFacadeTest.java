@@ -1,7 +1,10 @@
 package facades;
 
 import dtos.Assistant.AssistantDTO;
+import dtos.Booking.BookingDTO;
 import entities.Assistant;
+import entities.Booking;
+import entities.Car;
 import org.junit.jupiter.api.*;
 import utils.EMF_Creator;
 
@@ -81,6 +84,25 @@ class AssistantFacadeTest {
         //Test that it is the objects that we expect the list will contain.
         assertThat(assistants, containsInAnyOrder(a1DTO,a2DTO,a3DTO));
 
+    }
+
+    @Test
+    public void createAssistantTest() {
+        Assistant a4 = new Assistant("Jønke","Danish",9,175);
+        AssistantDTO createdAssistant = new AssistantDTO(a4);
+
+        AssistantDTO a4DTO = facade.createAssistant(createdAssistant);
+
+        List<AssistantDTO> assistants = facade.getAllAssistants().getAssistants();
+
+        //Test if the size of the assistant arraylist is now 4 instead of 3.
+        int expected = 4;
+        int actual = assistants.size();
+        assertEquals(expected, actual);
+
+
+        //Confirm that a4DTO (the new assistant) has been added to the list of bookings.
+        assertThat(assistants, hasItem(a4DTO));
     }
 
 }

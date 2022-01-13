@@ -2,6 +2,8 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dtos.Assistant.AssistantDTO;
+import dtos.Booking.BookingDTO;
 import facades.AssistantFacade;
 import utils.EMF_Creator;
 
@@ -30,5 +32,14 @@ public class AssistantResource {
     @RolesAllowed("user")
     public String getAll() {
         return gson.toJson(facade.getAllAssistants());
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String createAssistant(String assistant) {
+        AssistantDTO a = gson.fromJson(assistant, AssistantDTO.class);
+        AssistantDTO aNew = facade.createAssistant(a);
+        return gson.toJson(aNew);
     }
 }

@@ -146,6 +146,8 @@ class BookingResourceTest {
     private void logOut() {
         securityToken = null;
     }
+
+    //TODO: Figure out why u1 returns null
     /*
     @Test
     public void testCreateBooking() {

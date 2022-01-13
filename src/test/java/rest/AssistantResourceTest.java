@@ -152,4 +152,20 @@ class AssistantResourceTest {
 
         assertThat(assistants, containsInAnyOrder(a1DTO, a2DTO, a3DTO));
     }
+
+    @Test
+    public void testCreateAssistant() {
+        Assistant a4 = new Assistant("Jønke", "Danish", 9, 175);
+        given()
+                .contentType("application/json")
+                .body(new AssistantDTO(a4))
+                .when()
+                .post("assistant")
+                .then()
+                .statusCode(200)
+                .body("id", notNullValue())
+                .body("name", equalTo(a4.getName()))
+                .body("language", equalTo(a4.getLanguage()))
+                .body("experience", equalTo(a4.getExperience()));   
+    }
 }

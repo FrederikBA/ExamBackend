@@ -137,7 +137,7 @@ class BookingFacadeTest {
 
         List<BookingDTO> bookings = facade.getAllBookings(u1.getUserName()).getBookings();
 
-        //Test if the size of the boat array is now 4 instead of 3.
+        //Test if the size of the booking arraylist is now 4 instead of 3.
         int expected = 4;
         int actual = bookings.size();
         assertEquals(expected, actual);
@@ -145,7 +145,5 @@ class BookingFacadeTest {
 
         //Confirm that b4DTO (the new booking) has been added to the list of bookings.
         assertThat(bookings, hasItem(b4DTO));
-
-
     }
 }
