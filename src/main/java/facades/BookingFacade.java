@@ -55,6 +55,19 @@ public class BookingFacade {
 
     public BookingDTO createBooking(BookingDTO bookingDTO) throws WebApplicationException {
         EntityManager em = emf.createEntityManager();
+
+        if (bookingDTO.getCar().getRegNumber().length() == 0 ||bookingDTO.getCar().getModel().length() == 0 || bookingDTO.getCar().getMake().length() == 0) {
+            throw new WebApplicationException("Inputs are missing, please make sure to fill out the formular");
+        }
+
+        if(bookingDTO.getDuration() < 10) {
+            throw new WebApplicationException("The minimum duration of a car wash is 10 minutes");
+        }
+
+        if(bookingDTO.getCar().getYear() > 2022 || bookingDTO.getCar().getYear() < 1985) {
+            throw new WebApplicationException("Year not valid");
+        }
+
         try {
             //Create the booking
             Booking booking = new Booking(bookingDTO.getDuration());

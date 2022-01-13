@@ -34,6 +34,22 @@ public class AssistantResource {
         return gson.toJson(facade.getAllAssistants());
     }
 
+    //Implemented for admin frontend feature for US-4
+    @Path("/unprotectedall")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getAllUnprotected() {
+        return gson.toJson(facade.getAllAssistants());
+    }
+
+    @Path("/booking/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getAssistantsByBookingId(@PathParam("id") int id) {
+        return gson.toJson(facade.getAssistantsByBooking(id));
+    }
+
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

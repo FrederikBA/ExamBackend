@@ -77,6 +77,7 @@ public class BookingResource {
     @Path("/{id}")
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("admin")
     public String deleteBoat(@PathParam("id") int id) {
         return gson.toJson(facade.deleteBooking(id));
     }

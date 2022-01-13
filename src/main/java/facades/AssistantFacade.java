@@ -46,6 +46,18 @@ public class AssistantFacade {
         }
     }
 
+    public AssistantsDTO getAssistantsByBooking(int bookningId) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Assistant> query = em.createQuery("SELECT a FROM Assistant a JOIN a.bookings b WHERE b.id=:bookingId", Assistant.class);
+            query.setParameter("bookingId", bookningId);
+            List<Assistant> result = query.getResultList();
+            return new AssistantsDTO(result);
+        } finally {
+            em.close();
+        }
+    }
+
     public AssistantDTO createAssistant(AssistantDTO assistantDTO) {
         EntityManager em = emf.createEntityManager();
         try {
