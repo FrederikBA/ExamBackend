@@ -13,6 +13,8 @@ public class Booking {
     private Integer id;
     private Date created;
     private double duration;
+    @ManyToOne
+    private User user;
 
     @ManyToOne
     private Car car;
@@ -74,5 +76,13 @@ public class Booking {
             this.assistants.add(assistant);
             assistant.getBookings().add(this);
         }
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

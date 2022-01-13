@@ -2,6 +2,7 @@ package dtos.Booking;
 
 import dtos.Assistant.AssistantDTO;
 import dtos.Car.CarDTO;
+import dtos.UserDTO;
 import entities.Assistant;
 import entities.Booking;
 
@@ -16,6 +17,7 @@ public class BookingDTO {
     private double duration;
     private CarDTO car;
     private List<AssistantDTO> assistants;
+    private String user;
 
     public static List<BookingDTO> getFromList(List<Booking> bookings) {
         return bookings.stream()
@@ -29,6 +31,7 @@ public class BookingDTO {
         this.duration = booking.getDuration();
         this.car = new CarDTO(booking.getCar());
         this.assistants = AssistantDTO.getFromList(booking.getAssistants());
+        this.user = new UserDTO(booking.getUser()).getUserName();
     }
 
     public Integer getId() {
@@ -63,17 +66,33 @@ public class BookingDTO {
         this.car = car;
     }
 
+    public List<AssistantDTO> getAssistants() {
+        return assistants;
+    }
+
+    public void setAssistants(List<AssistantDTO> assistants) {
+        this.assistants = assistants;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BookingDTO that = (BookingDTO) o;
-        return Double.compare(that.duration, duration) == 0 && Objects.equals(id, that.id) && Objects.equals(created, that.created) && Objects.equals(car, that.car) && Objects.equals(assistants, that.assistants);
+        return Double.compare(that.duration, duration) == 0 && Objects.equals(id, that.id) && Objects.equals(created, that.created) && Objects.equals(car, that.car) && Objects.equals(assistants, that.assistants) && Objects.equals(user, that.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, created, duration, car, assistants);
+        return Objects.hash(id, created, duration, car, assistants, user);
     }
 
     @Override
@@ -84,6 +103,7 @@ public class BookingDTO {
                 ", duration=" + duration +
                 ", car=" + car +
                 ", assistants=" + assistants +
+                ", user='" + user + '\'' +
                 '}';
     }
 }

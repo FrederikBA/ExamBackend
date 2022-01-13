@@ -11,6 +11,7 @@ import javax.persistence.EntityManagerFactory;
 import entities.Assistant;
 import entities.Booking;
 import entities.Car;
+import entities.User;
 import utils.EMF_Creator;
 
 
@@ -18,11 +19,13 @@ public class Populator {
     public static void populate() {
         EntityManagerFactory emf = EMF_Creator.createEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
+        User user = em.find(User.class, "user");
         Car car = new Car("MD21233", "UP", "Volkswagen", 2022);
         Booking booking = new Booking(500);
         Assistant assistant = new Assistant("Jens", "Danish", 5, 125);
 
         booking.addAssistant(assistant);
+        user.addBooking(booking);
 
         car.addBooking(booking);
 

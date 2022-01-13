@@ -10,7 +10,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
 
 import dtos.Assistant.AssistantDTO;
-import entities.Assistant;
+import dtos.Booking.BookingDTO;
+import entities.Booking;
+import entities.Car;
 import entities.Role;
 import entities.User;
 import io.restassured.RestAssured;
@@ -34,10 +36,12 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-class AssistantResourceTest {
+class BookingResourceTest {
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
-    private static Assistant a1, a2, a3;
+    private static Booking b1, b2, b3;
+    private static User u1;
+    private static Car c1, c2, c3;
 
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
@@ -69,22 +73,29 @@ class AssistantResourceTest {
         httpServer.shutdownNow();
     }
 
-    @BeforeEach
     public void setUp() {
         EntityManager em = emf.createEntityManager();
-        a1 = new Assistant("TestNameOne", "Danish", 5, 125);
-        a2 = new Assistant("TestNameTwo", "Swedish", 2, 115);
-        a3 = new Assistant("TestNameThree", "Polish", 27, 75);
+
+        b1 = new Booking(500);
+        b2 = new Booking(400);
+        b3 = new Booking(750);
+
+        c1 = new Car("XXYY333", "TestModelOne", "TestMakeOne", 2020);
+        c2 = new Car("YYXX444", "TestModelTwo", "TestMakeTwo", 2021);
+        c3 = new Car("XYYX555", "TestModelThree", "TestMakeThree", 2022);
+
+        c1.addBooking(b1);
+        c2.addBooking(b2);
+        c3.addBooking(b3);
 
         Role userRole = new Role("user");
-        Role adminRole = new Role("admin");
-        User user = new User("user", "test");
-        user.addRole(userRole);
-        User admin = new User("admin", "test");
-        admin.addRole(adminRole);
-        User both = new User("user_admin", "test");
-        both.addRole(userRole);
-        both.addRole(adminRole);
+        u1 = new User("user", "test");
+        u1.addRole(userRole);
+
+        u1.addBooking(b1);
+        u1.addBooking(b2);
+        u1.addBooking(b3);
+
 
         try {
             em.getTransaction().begin();
@@ -93,14 +104,14 @@ class AssistantResourceTest {
             em.createQuery("delete from Car").executeUpdate();
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
-            em.persist(a1);
-            em.persist(a2);
-            em.persist(a3);
             em.persist(userRole);
-            em.persist(adminRole);
-            em.persist(user);
-            em.persist(admin);
-            em.persist(both);
+            em.persist(u1);
+            em.persist(c1);
+            em.persist(c2);
+            em.persist(c3);
+            em.persist(b1);
+            em.persist(b2);
+            em.persist(b3);
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -124,32 +135,5 @@ class AssistantResourceTest {
 
     private void logOut() {
         securityToken = null;
-    }
-
-    @Test
-    public void testGetAllAssistants() {
-        login("user", "test");
-
-        List<AssistantDTO> assistants;
-
-        AssistantDTO a1DTO = new AssistantDTO(a1);
-        AssistantDTO a2DTO = new AssistantDTO(a2);
-        AssistantDTO a3DTO = new AssistantDTO(a3);
-
-        assistants = given()
-                .contentType("application/json")
-                .accept(ContentType.JSON)
-                .header("x-access-token", securityToken)
-                .when()
-                .get("/assistant/all").then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList("assistants", AssistantDTO.class);
-
-        assertEquals(3, assistants.size());
-
-        assertThat(assistants, containsInAnyOrder(a1DTO, a2DTO, a3DTO));
     }
 }
