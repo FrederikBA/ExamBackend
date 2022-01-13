@@ -1,14 +1,14 @@
 package facades;
 
+import dtos.Assistant.AssistantDTO;
 import entities.Assistant;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.*;
 import utils.EMF_Creator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -43,7 +43,7 @@ class AssistantFacadeTest {
         EntityManager em = emf.createEntityManager();
         a1 = new Assistant("TestNameOne", "Danish", 5, 125);
         a2 = new Assistant("TestNameTwo", "Swedish", 2, 115);
-        a2 = new Assistant("TestNameThree", "Polish", 27, 75);
+        a3 = new Assistant("TestNameThree", "Polish", 27, 75);
 
         try {
             em.getTransaction().begin();
@@ -62,6 +62,25 @@ class AssistantFacadeTest {
 
     @AfterEach
     public void tearDown() {
+    }
+
+    @Test
+    public void getAllAssistantsTest() {
+        List<AssistantDTO> assistants = facade.getAllAssistants().getAssistants();
+
+        int expected = 3;
+        int actual = assistants.size();
+
+        //Test that there is in fact 3 assistants in the list
+        assertEquals(expected,actual);
+
+        AssistantDTO a1DTO = new AssistantDTO(a1);
+        AssistantDTO a2DTO = new AssistantDTO(a2);
+        AssistantDTO a3DTO = new AssistantDTO(a3);
+
+        //Test that it is the objects that we expect the list will contain.
+        assertThat(assistants, containsInAnyOrder(a1DTO,a2DTO,a3DTO));
+
     }
 
 }
