@@ -37,6 +37,7 @@ public class AssistantResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("admin")
     public String createAssistant(String assistant) {
         AssistantDTO a = gson.fromJson(assistant, AssistantDTO.class);
         AssistantDTO aNew = facade.createAssistant(a);

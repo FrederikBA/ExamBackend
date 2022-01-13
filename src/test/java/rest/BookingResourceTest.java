@@ -132,8 +132,8 @@ class BookingResourceTest {
     private static String securityToken;
 
     //Utility method to login and set the returned securityToken
-    private static void login(String role, String password) {
-        String json = String.format("{username: \"%s\", password: \"%s\"}", role, password);
+    private static void login(String username, String password) {
+        String json = String.format("{username: \"%s\", password: \"%s\"}", username, password);
         securityToken = given()
                 .contentType("application/json")
                 .body(json)

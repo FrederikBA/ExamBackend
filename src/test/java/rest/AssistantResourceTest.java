@@ -111,8 +111,8 @@ class AssistantResourceTest {
     private static String securityToken;
 
     //Utility method to login and set the returned securityToken
-    private static void login(String role, String password) {
-        String json = String.format("{username: \"%s\", password: \"%s\"}", role, password);
+    private static void login(String username, String password) {
+        String json = String.format("{username: \"%s\", password: \"%s\"}", username, password);
         securityToken = given()
                 .contentType("application/json")
                 .body(json)
@@ -155,9 +155,12 @@ class AssistantResourceTest {
 
     @Test
     public void testCreateAssistant() {
+        login("admin","test");
+
         Assistant a4 = new Assistant("Jønke", "Danish", 9, 175);
         given()
                 .contentType("application/json")
+                .header("x-access-token", securityToken)
                 .body(new AssistantDTO(a4))
                 .when()
                 .post("assistant")
@@ -166,6 +169,6 @@ class AssistantResourceTest {
                 .body("id", notNullValue())
                 .body("name", equalTo(a4.getName()))
                 .body("language", equalTo(a4.getLanguage()))
-                .body("experience", equalTo(a4.getExperience()));   
+                .body("experience", equalTo(a4.getExperience()));
     }
 }
