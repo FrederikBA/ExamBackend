@@ -151,4 +151,22 @@ public class BookingFacade {
             em.close();
         }
     }
+
+    public BookingDTO deleteBooking(int id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Booking booking = em.find(Booking.class, id);
+            if (booking == null) {
+                throw new WebApplicationException("No booking found matching the id");
+            } else {
+                em.getTransaction().begin();
+                em.createNativeQuery("DELETE FROM ASSISTANT_BOOKING WHERE bookings_id = ?").setParameter(1, booking.getId()).executeUpdate();
+                em.remove(booking);
+                em.getTransaction().commit();
+                return new BookingDTO(booking);
+            }
+        } finally {
+            em.close();
+        }
+    }
 }

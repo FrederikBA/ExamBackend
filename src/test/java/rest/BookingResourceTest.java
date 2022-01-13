@@ -11,7 +11,11 @@ import javax.ws.rs.core.UriBuilder;
 
 import dtos.Assistant.AssistantDTO;
 import dtos.Booking.BookingDTO;
-import entities.*;
+import entities.Assistant;
+import entities.Role;
+import entities.Booking;
+import entities.Car;
+import entities.User;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
@@ -38,9 +42,8 @@ class BookingResourceTest {
     private static final String SERVER_URL = "http://localhost/api";
     private static Booking b1, b2, b3;
     private static Car c1, c2, c3;
+    private static User u1;
     private static Assistant a1, a2, a3;
-    private static User u1, u2;
-    private static Role r1, r2;
 
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
@@ -74,10 +77,9 @@ class BookingResourceTest {
 
     public void setUp() {
         EntityManager em = emf.createEntityManager();
-
-        b1 = new Booking(500);
-        b2 = new Booking(400);
-        b3 = new Booking(750);
+        b1 = new Booking(50);
+        b2 = new Booking(25);
+        b3 = new Booking(15);
 
         c1 = new Car("XXYY333", "TestModelOne", "TestMakeOne", 2020);
         c2 = new Car("YYXX444", "TestModelTwo", "TestMakeTwo", 2021);
@@ -87,21 +89,21 @@ class BookingResourceTest {
         a2 = new Assistant("TestNameTwo", "Swedish", 2, 115);
         a3 = new Assistant("TestNameThree", "Polish", 27, 75);
 
+        Role userRole = new Role("user");
+        u1 = new User("user", "test");
+        u1.addRole(userRole);
+
         c1.addBooking(b1);
         c2.addBooking(b2);
         c3.addBooking(b3);
-
-        r1 = new Role("user");
-        r2 = new Role("admin");
-        u1 = new User("user", "test");
-        u1.addRole(r1);
-        u2 = new User("admin", "test");
-        u2.addRole(r2);
 
         u1.addBooking(b1);
         u1.addBooking(b2);
         u1.addBooking(b3);
 
+        b1.addAssistant(a1);
+        b2.addAssistant(a2);
+        b3.addAssistant(a3);
 
         try {
             em.getTransaction().begin();
@@ -110,18 +112,14 @@ class BookingResourceTest {
             em.createQuery("delete from Car").executeUpdate();
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
-            em.persist(r1);
-            em.persist(r2);
+            em.persist(userRole);
             em.persist(u1);
-            em.persist(u2);
-            em.persist(c2);
-            em.persist(c3);
             em.persist(b1);
             em.persist(b2);
             em.persist(b3);
-            em.persist(a1);
-            em.persist(a2);
-            em.persist(a3);
+            em.persist(c1);
+            em.persist(c2);
+            em.persist(c3);
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -147,7 +145,7 @@ class BookingResourceTest {
         securityToken = null;
     }
 
-    //TODO: Figure out why u1 returns null
+    //TODO: Something is wrong with the objects configured in this class, tests return nullpointers.
     /*
     @Test
     public void testCreateBooking() {
@@ -169,5 +167,29 @@ class BookingResourceTest {
                 .body("id", notNullValue())
                 .body("duration", equalTo("1000"));
     }
-     */
+
+    @Test
+    public void testDeleteBooking() {
+        given()
+                .contentType("application/json")
+                .pathParam("id", b3.getId())
+                .delete("booking/{id}")
+                .then()
+                .assertThat()
+                .statusCode(200);
+
+        List<BookingDTO> allBookings;
+
+        allBookings = given()
+                .contentType("application/json")
+                .when()
+                .get("/booking/all")
+                .then()
+                .extract().body().jsonPath().getList("booking", BookingDTO.class);
+
+        BookingDTO b3DTO = new BookingDTO(b3);
+
+        assertThat(allBookings, not(hasItem(b3DTO)));
+    }
+*/
 }

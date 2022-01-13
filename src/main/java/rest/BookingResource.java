@@ -73,4 +73,11 @@ public class BookingResource {
         BookingDTO bEdited = facade.editBooking(b);
         return gson.toJson(bEdited);
     }
+
+    @Path("/{id}")
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    public String deleteBoat(@PathParam("id") int id) {
+        return gson.toJson(facade.deleteBooking(id));
+    }
 }

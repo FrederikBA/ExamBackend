@@ -82,7 +82,6 @@ class BookingFacadeTest {
         b3.addAssistant(a3);
 
 
-
         try {
             em.getTransaction().begin();
             em.createQuery("delete from Assistant").executeUpdate();
@@ -124,14 +123,14 @@ class BookingFacadeTest {
         BookingDTO b2DTO = new BookingDTO(b2);
         BookingDTO b3DTO = new BookingDTO(b3);
 
-        assertThat(bookings, containsInAnyOrder(b1DTO,b2DTO, b3DTO));
+        assertThat(bookings, containsInAnyOrder(b1DTO, b2DTO, b3DTO));
 
     }
 
     @Test
     public void createBookingTest() {
         Booking b4 = new Booking(1000);
-        Car c4 = new Car("TRXD654","T-Roc","Volkswagen", 2018);
+        Car c4 = new Car("TRXD654", "T-Roc", "Volkswagen", 2018);
         b4.setCar(c4);
         b4.addAssistant(a1);
         b4.addAssistant(a2);
@@ -152,4 +151,21 @@ class BookingFacadeTest {
         assertThat(bookings, hasItem(b4DTO));
     }
 
+    @Test
+    public void deleteBookingTest() {
+        facade.deleteBooking(b3.getId());
+
+        List<BookingDTO> allBookings = facade.getAllBookings().getBookings();
+
+        //Confirm that the bookings arraylist is now 2 bookings down from 3.
+        assertEquals(2, allBookings.size());
+
+        BookingDTO b1DTO = new BookingDTO(b1);
+        BookingDTO b2DTO = new BookingDTO(b2);
+        BookingDTO b3DTO = new BookingDTO(b3);
+
+        //Confirm that the book we deleted is not containing in the array
+        assertThat(allBookings, not(hasItem(b3DTO)));
+
+    }
 }
