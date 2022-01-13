@@ -11,6 +11,8 @@ public class Car {
     @Column(name = "id", nullable = false)
     private Integer id;
     private String regNumber;
+
+    //Changed to make since brand and make is essentially the same thing.
     private String model;
     private String make;
     private int year;
