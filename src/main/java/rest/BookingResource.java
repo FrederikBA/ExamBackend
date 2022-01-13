@@ -42,4 +42,16 @@ public class BookingResource {
         BookingDTO bNew = facade.createBooking(b);
         return gson.toJson(bNew);
     }
+
+    @Path("/{id}")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("admin")
+    public String editBookingAssistants(@PathParam("id") int id, String booking) {
+       BookingDTO b = gson.fromJson(booking, BookingDTO.class);
+        b.setId(id);
+        BookingDTO bEdited = facade.updateBookingAssistants(b);
+        return gson.toJson(bEdited);
+    }
 }

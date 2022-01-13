@@ -1,5 +1,6 @@
 package facades;
 
+import dtos.Assistant.AssistantDTO;
 import dtos.Booking.BookingDTO;
 import entities.*;
 import org.junit.jupiter.api.*;
@@ -76,6 +77,10 @@ class BookingFacadeTest {
         c2.addBooking(b2);
         c3.addBooking(b3);
 
+        b1.addAssistant(a1);
+        b2.addAssistant(a2);
+        b3.addAssistant(a3);
+
 
 
         try {
@@ -146,4 +151,5 @@ class BookingFacadeTest {
         //Confirm that b4DTO (the new booking) has been added to the list of bookings.
         assertThat(bookings, hasItem(b4DTO));
     }
+
 }

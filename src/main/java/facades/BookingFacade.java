@@ -8,10 +8,7 @@ import entities.Booking;
 import entities.Car;
 import entities.User;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.ws.rs.WebApplicationException;
 import java.util.List;
 
@@ -77,6 +74,42 @@ public class BookingFacade {
             em.persist(car);
             em.getTransaction().commit();
 
+            return new BookingDTO(booking);
+        } finally {
+            em.close();
+        }
+    }
+
+
+    public BookingDTO updateBookingAssistants(BookingDTO bookingDTO) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Booking booking = em.find(Booking.class, bookingDTO.getId());
+
+
+            // Edit assistants
+
+            //Clear owners from the boat before to allow new owners to be set
+            em.getTransaction().begin();
+            booking.getAssistants().clear();
+            em.createNativeQuery("DELETE FROM ASSISTANT_BOOKING WHERE bookings_id = ?").setParameter(1, booking.getId()).executeUpdate();
+            em.getTransaction().commit();
+
+            for (int i = 0; i < bookingDTO.getAssistants().size(); i++) {
+                AssistantDTO assistantDTO = bookingDTO.getAssistants().get(i);
+
+                try {
+                    Assistant foundAssistant = em.createQuery("SELECT a FROM Assistant a WHERE a.id = :assistantId", Assistant.class).setParameter("assistantId", assistantDTO.getId()).getSingleResult();
+                    booking.addAssistant(foundAssistant);
+                } catch (NoResultException error) {
+                    throw new WebApplicationException("Assistant does not exist");
+                }
+            }
+
+            //Update the boat
+            em.getTransaction().begin();
+            em.merge(booking);
+            em.getTransaction().commit();
             return new BookingDTO(booking);
         } finally {
             em.close();
